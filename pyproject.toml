@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pymodaq_plugins_avantes"
+version = "5.0.0"
+description = "PyMoDAQ plugin for Avantes spectrometers"
+
+dependencies = [
+    "pymodaq>=5"
+]
+
+[project.entry-points."pymodaq.instruments"]
+avantes = "pymodaq_plugins_avantes"
+
+[project.entry-points."pymodaq.plugins"]
+avantes = "pymodaq_plugins_avantes"
+
+[tool.setuptools.packages.find]
+where = ["."]
