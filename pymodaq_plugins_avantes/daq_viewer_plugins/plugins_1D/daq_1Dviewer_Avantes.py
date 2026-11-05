@@ -19,15 +19,48 @@ class DAQ_1DViewer_Avantes(DAQ_Viewer_base):
     # define controller type for easy autocompletion
     controller_type = AvantesController
 
-    params = comon_parameters+[
-        {'title': 'Integration time:', 'name': 'integration_time',
-         'type': 'float', 'min': 0.001, 'value': 0.1,
-         'tip': 'Integration time in seconds'},
-    ] + [ {'title': 'Output %d:' % (i + 1), 'name': 'output_%d' % (i + 1),
-           'type': 'led_push', 'value': False,
-           'tip': 'Logic level on putput %d' % (i + 1) } \
-          for i in range(10)
-         ]
+    params = comon_parameters + [
+    {'title': 'Integration time:',
+     'name': 'integration_time',
+     'type': 'float',
+     'min': 0.001,
+     'value': 0.1,
+     'tip': 'Integration time in seconds'},
+
+    {'title': 'Trigger Mode:',
+     'name': 'trigger_mode',
+     'type': 'list',
+     'value': ['Internal', 'External'],
+     'value': 'Internal'},
+
+    {'title': 'Trigger Source:',
+     'name': 'trigger_source',
+     'type': 'int',
+     'value': 0},
+
+    {'title': 'Trigger Source Type:',
+     'name': 'trigger_source_type',
+     'type': 'int',
+     'value': 0},
+
+] + [
+    {'title': 'Output %d:' % (i + 1),
+     'name': 'output_%d' % (i + 1),
+     'type': 'led_push',
+     'value': False,
+     'tip': 'Logic level on output %d' % (i + 1)}
+    for i in range(10)
+]
+    
+    # params = comon_parameters+[
+    #     {'title': 'Integration time:', 'name': 'integration_time',
+    #      'type': 'float', 'min': 0.001, 'value': 0.1,
+    #      'tip': 'Integration time in seconds'},
+    # ] +  [ {'title': 'Output %d:' % (i + 1), 'name': 'output_%d' % (i + 1),
+    #        'type': 'led_push', 'value': False,
+    #        'tip': 'Logic level on putput %d' % (i + 1) } \
+    #       for i in range(10)
+    #      ]
 
     def ini_attributes(self):
         self.controller: self.controller_type = None
@@ -42,6 +75,23 @@ class DAQ_1DViewer_Avantes(DAQ_Viewer_base):
             # functionallity.
             self.controller.set_digital_output(int(param.name()[7:]),
                                                param.value())
+
+        if param.name() in [
+            "trigger_mode",
+            "trigger_source",
+            "trigger_source_type"
+        ]:
+            self.controller.set_trigger_settings(
+                self.settings['trigger_mode'],
+                self.settings['trigger_source'],
+                self.settings['trigger_source_type']
+            )
+        # if param.name() == 'trigger_mode':
+        #     if param.value() == 'Internal':
+        #         self.controller._measurement_config.m_Trigger_m_Mode = 0
+        #     else:
+        #         self.controller._measurement_config.m_Trigger_m_Mode = 1
+
 
     def ini_detector(self, controller=None):
         """Detector communication initialization

@@ -132,9 +132,9 @@ class AvantesController:
         self._measurement_config.m_Smoothing_m_SmoothPix = 0
         self._measurement_config.m_Smoothing_m_SmoothModel = 0
         self._measurement_config.m_SaturationDetection = 0
-        self._measurement_config.m_Trigger_m_Mode = 1
-        self._measurement_config.m_Trigger_m_Source = 0
-        self._measurement_config.m_Trigger_m_SourceType = 0
+        self._measurement_config.m_Trigger_m_Mode = self.trigger_mode
+        self._measurement_config.m_Trigger_m_Source = self.trigger_source
+        self._measurement_config.m_Trigger_m_SourceType = self.trigger_source_type
         self._measurement_config.m_Control_m_StrobeControl = 0
         self._measurement_config.m_Control_m_LaserDelay = 0
         self._measurement_config.m_Control_m_LaserWidth = 0
@@ -344,6 +344,9 @@ class AvantesSimuController(AvantesController):
         self._signal = 3000 * np.exp(-((self.wavelengths - 600) / 300)**4)
         self._induced = np.exp(-((self.wavelengths - 400) / 30)**2)
         self._reference = 3500 * np.exp(-((self._wavelengths - 600) / 300)**4)
+        self.trigger_mode = 0
+        self.trigger_source = 0
+        self.trigger_source_type = 0
 
     def open_communication(self):
         self._pin_states[PIN_AVALIGHT-1]   = 1
@@ -368,6 +371,12 @@ class AvantesSimuController(AvantesController):
                 integration_time in [ms]
         """
         self._measurement_config.m_IntegrationTime = float(integration_time)
+
+    def set_trigger_settings(self, mode, source, source_type):
+        self.trigger_mode = mode
+        self.trigger_source = source
+        self.trigger_source_type = source_type
+
 
     def set_number_of_averages(self, n_average: int):
         """
