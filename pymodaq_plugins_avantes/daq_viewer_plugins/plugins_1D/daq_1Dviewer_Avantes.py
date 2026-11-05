@@ -30,18 +30,20 @@ class DAQ_1DViewer_Avantes(DAQ_Viewer_base):
     {'title': 'Trigger Mode:',
      'name': 'trigger_mode',
      'type': 'list',
-     'value': ['Internal', 'External'],
-     'value': 'Internal'},
+     'limits': ['Internal', 'External'],
+     'value': 'Internal',},
 
     {'title': 'Trigger Source:',
      'name': 'trigger_source',
-     'type': 'int',
-     'value': 0},
+     'type': 'list',
+     'limits' : [0,1,2],
+     'value': 0,},
 
     {'title': 'Trigger Source Type:',
      'name': 'trigger_source_type',
-     'type': 'int',
-     'value': 0},
+     'type': 'list',
+     'limits' : [0,1,2],
+     'value': 0,},
 
 ] + [
     {'title': 'Output %d:' % (i + 1),
@@ -67,6 +69,7 @@ class DAQ_1DViewer_Avantes(DAQ_Viewer_base):
         self.x_axis = None
 
     def commit_settings(self, param: Parameter):
+        # print("commit_settings called:", param.name(), param.value())
         if param.name() == "integration_time":
             self.controller.set_integration_time(param.value() * 1000)
         elif param.name()[:7] == 'output_':
@@ -76,21 +79,13 @@ class DAQ_1DViewer_Avantes(DAQ_Viewer_base):
             self.controller.set_digital_output(int(param.name()[7:]),
                                                param.value())
 
-        if param.name() in [
-            "trigger_mode",
-            "trigger_source",
-            "trigger_source_type"
-        ]:
-            self.controller.set_trigger_settings(
-                self.settings['trigger_mode'],
-                self.settings['trigger_source'],
-                self.settings['trigger_source_type']
-            )
-        # if param.name() == 'trigger_mode':
-        #     if param.value() == 'Internal':
-        #         self.controller._measurement_config.m_Trigger_m_Mode = 0
-        #     else:
-        #         self.controller._measurement_config.m_Trigger_m_Mode = 1
+        if param.name() in ["trigger_mode","trigger_source","trigger_source_type"]:
+            
+            # print("trigger_mode =", self.settings['trigger_mode'])
+            # print("trigger_source =", self.settings['trigger_source'])
+            # print("trigger_source_type =", self.settings['trigger_source_type'])
+            self.controller.set_trigger_settings(self.settings['trigger_mode'],self.settings['trigger_source'],self.settings['trigger_source_type'])
+ 
 
 
     def ini_detector(self, controller=None):
@@ -114,6 +109,12 @@ class DAQ_1DViewer_Avantes(DAQ_Viewer_base):
 
         if self.is_master:
             self.controller = self.controller_type()
+            # print("GUI trigger mode:",self.settings['trigger_mode'])
+            self.controller.set_trigger_settings(
+            self.settings['trigger_mode'],
+            self.settings['trigger_source'],
+            self.settings['trigger_source_type']
+        )
             if self.controller.open_communication():
                 info = "Avantes Spectro initilialized"
             else:

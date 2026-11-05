@@ -43,6 +43,9 @@ class AvantesController:
         self._wavelengths = [0.0] * 4096
         self._spectraldata = [0.0] * 4096
         self._scan_count = 0
+        self.trigger_mode = 0
+        self.trigger_source = 0
+        self.trigger_source_type = 0
         # shouldn't this go to the PyMoDAQ parameters?
 
     def open_communication(self) -> bool:
@@ -140,6 +143,8 @@ class AvantesController:
         self._measurement_config.m_Control_m_LaserWidth = 0
         self._measurement_config.m_Control_m_LaserWaveLength = 0.0
         self._measurement_config.m_Control_m_StoreToRam = 0
+        # print(self._measurement_config.m_Trigger_m_Mode)
+        # print("Preparing measurement with mode:",self.trigger_mode)
         result = avaspec.AVS_PrepareMeasure(self._device_handle,
                                             self._measurement_config)
         # NB: return: SUCCESS = 0 or FAILURE <> 0; not currently used
@@ -326,6 +331,27 @@ class AvantesController:
         self._scan_count += 1
         self.pymodaq_callback(np.array_split(full_data, 2)[0])
 
+    # def set_trigger_settings(self, mode, source, source_type):
+    #     print("set_trigger_settings", mode, source, source_type)
+    #     self.trigger_mode = mode
+    #     self.trigger_source = source
+    #     self.trigger_source_type = source_type
+
+    def set_trigger_settings(self, mode, source, source_type):
+
+        if mode == "Internal":
+            self.trigger_mode = 0
+
+        elif mode == "External":
+            self.trigger_mode = 1
+
+        else:
+            self.trigger_mode = 0
+
+        self.trigger_source = int(source)
+        self.trigger_source_type = int(source_type)
+
+        # print("Stored trigger mode =", self.trigger_mode)
 
 ### simulating non existing device for debugging purpose
 
@@ -372,10 +398,7 @@ class AvantesSimuController(AvantesController):
         """
         self._measurement_config.m_IntegrationTime = float(integration_time)
 
-    def set_trigger_settings(self, mode, source, source_type):
-        self.trigger_mode = mode
-        self.trigger_source = source
-        self.trigger_source_type = source_type
+
 
 
     def set_number_of_averages(self, n_average: int):
