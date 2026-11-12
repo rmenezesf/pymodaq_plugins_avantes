@@ -145,6 +145,12 @@ class AvantesController:
         self._measurement_config.m_Control_m_StoreToRam = 0
         # print(self._measurement_config.m_Trigger_m_Mode)
         # print("Preparing measurement with mode:",self.trigger_mode)
+        print(f"PrepareMeasure: "
+            f"Mode={self._measurement_config.m_Trigger_m_Mode}, "
+            f"Source={self._measurement_config.m_Trigger_m_Source}, "
+            f"SourceType={self._measurement_config.m_Trigger_m_SourceType}"
+    )
+
         result = avaspec.AVS_PrepareMeasure(self._device_handle,
                                             self._measurement_config)
         # NB: return: SUCCESS = 0 or FAILURE <> 0; not currently used
@@ -278,13 +284,19 @@ class AvantesController:
         -------
                 none, only update globals_vars
         """
+        print(
+    "Starting acquisition with:",
+    self._measurement_config.m_Trigger_m_Mode,
+    self._measurement_config.m_Trigger_m_Source,
+    self._measurement_config.m_Trigger_m_SourceType
+)
         avaspec.AVS_Measure(self._device_handle, 0, 1)
         # NB: return: SUCCESS = 0 or FAILURE <> 0; not currently used
         time.sleep(0.005)
         time.sleep(self._measurement_config.m_IntegrationTime/1000)
         # at least wait for the integration time !
         # we wait the measurement ends
-        while avaspec.AVS_PollScan(self._device_handle):
+        while not avaspec.AVS_PollScan(self._device_handle):
             time.sleep(0.005)
 
         # we get the data with internal timestamp of the device
@@ -351,7 +363,49 @@ class AvantesController:
         self.trigger_source = int(source)
         self.trigger_source_type = int(source_type)
 
+        self.apply_trigger_settings()
+
         # print("Stored trigger mode =", self.trigger_mode)
+
+    # def apply_trigger_settings(self):
+
+    #     self._measurement_config.m_Trigger_m_Mode = self.trigger_mode
+    #     self._measurement_config.m_Trigger_m_Source = self.trigger_source
+    #     self._measurement_config.m_Trigger_m_SourceType = self.trigger_source_type
+
+    #     result = avaspec.AVS_PrepareMeasure(
+    #         self._device_handle,
+    #         self._measurement_config
+    #     )
+
+    #     print(
+    #         "Applied trigger:",
+    #         self.trigger_mode,
+    #         self.trigger_source,
+    #         self.trigger_source_type,
+    #         "result=", result
+    #     )
+
+    def apply_trigger_settings(self):
+
+        self._measurement_config.m_Trigger_m_Mode = self.trigger_mode
+        self._measurement_config.m_Trigger_m_Source = self.trigger_source
+        self._measurement_config.m_Trigger_m_SourceType = self.trigger_source_type
+
+        print(
+            "Sending to SDK:",
+            self._measurement_config.m_Trigger_m_Mode,
+            self._measurement_config.m_Trigger_m_Source,
+            self._measurement_config.m_Trigger_m_SourceType
+        )
+
+        result = avaspec.AVS_PrepareMeasure(
+            self._device_handle,
+            self._measurement_config
+        )
+
+        print("PrepareMeasure result =", result)
+
 
 ### simulating non existing device for debugging purpose
 
