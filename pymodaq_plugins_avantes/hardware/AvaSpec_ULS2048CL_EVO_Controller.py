@@ -145,11 +145,11 @@ class AvantesController:
         self._measurement_config.m_Control_m_StoreToRam = 0
         # print(self._measurement_config.m_Trigger_m_Mode)
         # print("Preparing measurement with mode:",self.trigger_mode)
-        print(f"PrepareMeasure: "
-            f"Mode={self._measurement_config.m_Trigger_m_Mode}, "
-            f"Source={self._measurement_config.m_Trigger_m_Source}, "
-            f"SourceType={self._measurement_config.m_Trigger_m_SourceType}"
-    )
+        # print(f"PrepareMeasure: "
+            # f"Mode={self._measurement_config.m_Trigger_m_Mode}, "
+            # f"Source={self._measurement_config.m_Trigger_m_Source}, "
+            # f"SourceType={self._measurement_config.m_Trigger_m_SourceType}"
+    # )
 
         result = avaspec.AVS_PrepareMeasure(self._device_handle,
                                             self._measurement_config)
@@ -284,12 +284,12 @@ class AvantesController:
         -------
                 none, only update globals_vars
         """
-        print(
-    "Starting acquisition with:",
-    self._measurement_config.m_Trigger_m_Mode,
-    self._measurement_config.m_Trigger_m_Source,
-    self._measurement_config.m_Trigger_m_SourceType
-)
+        # print(
+    # "Starting acquisition with:",
+    # self._measurement_config.m_Trigger_m_Mode,
+    # self._measurement_config.m_Trigger_m_Source,
+    # self._measurement_config.m_Trigger_m_SourceType
+# )
         avaspec.AVS_Measure(self._device_handle, 0, 1)
         # NB: return: SUCCESS = 0 or FAILURE <> 0; not currently used
         time.sleep(0.005)
@@ -392,19 +392,19 @@ class AvantesController:
         self._measurement_config.m_Trigger_m_Source = self.trigger_source
         self._measurement_config.m_Trigger_m_SourceType = self.trigger_source_type
 
-        print(
-            "Sending to SDK:",
-            self._measurement_config.m_Trigger_m_Mode,
-            self._measurement_config.m_Trigger_m_Source,
-            self._measurement_config.m_Trigger_m_SourceType
-        )
+        # print(
+            # "Sending to SDK:",
+            # self._measurement_config.m_Trigger_m_Mode,
+            # self._measurement_config.m_Trigger_m_Source,
+            # self._measurement_config.m_Trigger_m_SourceType
+        # )
 
         result = avaspec.AVS_PrepareMeasure(
             self._device_handle,
             self._measurement_config
         )
 
-        print("PrepareMeasure result =", result)
+        # print("PrepareMeasure result =", result)
 
 
 ### simulating non existing device for debugging purpose
